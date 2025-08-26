@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: openfmb-mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_logs:/mosquitto/log
+
+  openfmb-adapter:
+    image: oesinc/openfmb.adapters:latest
+    container_name: openfmb-solar-adapter
+    restart: unless-stopped
+    depends_on:
+      - mosquitto
+    volumes:
+      - /Users/moha907/projects /openfmb-der/openfmb-der-minimal/openfmb-der-framework/scripts/der_configs:/cfg
+    command: -c /cfg/adapter-solar.yaml
+    environment:
+      - OPENFMB_LOG_LEVEL=info
+    networks:
+      - openfmb
+
+  # Optional: HMI for monitoring
+  openfmb-hmi:
+    image: oesinc/openfmb.hmi:latest
+    container_name: openfmb-hmi
+    restart: unless-stopped
+    depends_on:
+      - mosquitto
+    ports:
+      - "32771:32771"
+    environment:
+      - MQTT_BROKER_HOST=mosquitto
+      - MQTT_BROKER_PORT=1883
+    networks:
+      - openfmb
+
+volumes:
+  mosquitto_data:
+  mosquitto_logs:
+
+networks:
+  openfmb:
+    driver: bridge

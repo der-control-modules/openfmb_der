@@ -1,0 +1,61 @@
+---
+file:
+  id: openfmb-adapter-solar
+  edition: "2.1"
+  version: "1.0.0"
+  plugin: ""
+
+logging:
+  logger-name: "openfmb-solar-adapter"
+  console:
+    enabled: true
+  rotating-file:
+    enabled: true
+    path: "/Users/moha907/projects /openfmb-der/openfmb-der-minimal/openfmb-der-framework/scripts/der_configs/logs/adapter-solar.log"
+    max-size: 10485760  # 10MB
+    max-files: 5
+
+plugins:
+  modbus-master:
+    enabled: true
+    thread-pool-size: 2
+    sessions:
+      - path: "/Users/moha907/projects /openfmb-der/openfmb-der-minimal/openfmb-der-framework/scripts/der_configs/templates/modbus-solar-template.yaml"
+        overrides: []
+
+  mqtt:
+    enabled: true
+    max-queued-messages: 1000
+    server-address: "tcp://localhost:1883"
+    client-id: "openfmb-der-client-solar"
+    connect-retry-delay-ms: 5000
+    security:
+      security-type: none
+    publish:
+      - profile: SolarReadingProfile
+        topic-suffix: "03394dd2-5673-40f6-acdf-da811d7d1bec"
+      - profile: SolarStatusProfile
+        topic-suffix: "03394dd2-5673-40f6-acdf-da811d7d1bec"
+    subscribe:
+      - profile: SolarDiscreteControlProfile
+        topic-suffix: "03394dd2-5673-40f6-acdf-da811d7d1bec"
+      - profile: SolarControlProfile
+        topic-suffix: "03394dd2-5673-40f6-acdf-da811d7d1bec"
+
+  # Disabled plugins
+  capture:
+    enabled: false
+  replay:
+    enabled: false
+  dnp3-master:
+    enabled: false
+  dnp3-outstation:
+    enabled: false
+  modbus-outstation:
+    enabled: false
+  nats:
+    enabled: false
+  timescaledb:
+    enabled: false
+  log:
+    enabled: false

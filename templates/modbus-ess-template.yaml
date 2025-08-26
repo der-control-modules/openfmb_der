@@ -1,0 +1,55 @@
+---
+file:
+  id: modbus-ess-template
+  edition: "2.1"
+  version: "1.0.0"
+  plugin: "modbus-master"
+
+master:
+  channel:
+    type: tcp-client
+    tcp-client:
+      adapter: "192.168.1.101"
+      port: 500
+      connect-timeout-ms: 5000
+  
+  session:
+    response-timeout-ms: 5000
+    max-read-request-size: 100
+    device-map:
+      - unit-identifier: 1
+        profiles:
+          - name: ESSReadingProfile
+            mRID: "9543ad91-3d5b-4458-bcd0-45552339f752"
+            mapping:
+              - name: "BatterySystem"
+                type: "BatterySystem"
+                conducting-equipment:
+                  mRID: "9543ad91-3d5b-4458-bcd0-45552339f752"
+                  name: "Battery System 1"
+                  description: "Battery Energy Storage System"
+                reading-data:
+                  - name: "ActivePower"
+                    register-type: holding
+                    address: 40001
+                    register-count: 2
+                    data-type: float32
+                    scale: 1.0
+                    unit: "W"
+                    profile-mapping: "essReading.readingMMXU.W.net.cVal.mag.f.value"
+                  - name: "StateOfCharge"
+                    register-type: holding
+                    address: 40009
+                    register-count: 2
+                    data-type: float32
+                    scale: 1.0
+                    unit: "%"
+                    profile-mapping: "essReading.readingMMTR.SOC.mag.f.value"
+                  - name: "Voltage"
+                    register-type: holding
+                    address: 40005
+                    register-count: 2
+                    data-type: float32
+                    scale: 1.0
+                    unit: "V"
+                    profile-mapping: "essReading.readingMMXU.PhV.phsA.cVal.mag.f.value"

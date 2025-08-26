@@ -1,0 +1,78 @@
+---
+file:
+  id: modbus-solar-template
+  edition: "2.1"
+  version: "1.0.0"
+  plugin: "modbus-master"
+
+master:
+  channel:
+    type: tcp-client
+    tcp-client:
+      adapter: "192.168.1.100"
+      port: 502
+      connect-timeout-ms: 5000
+  
+  session:
+    response-timeout-ms: 5000
+    max-read-request-size: 100
+    device-map:
+      - unit-identifier: 1
+        profiles:
+          - name: SolarReadingProfile
+            mRID: "03394dd2-5673-40f6-acdf-da811d7d1bec"
+            mapping:
+              - name: "SolarInverter"
+                type: "SolarInverter"
+                conducting-equipment:
+                  mRID: "03394dd2-5673-40f6-acdf-da811d7d1bec"
+                  name: "Solar Inverter 1"
+                  description: "Solar inverter connected via Modbus"
+                reading-data:
+                  - name: "ActivePower"
+                    register-type: holding
+                    address: 40001
+                    register-count: 2
+                    data-type: float32
+                    scale: 1.0
+                    unit: "W"
+                    profile-mapping: "solarReading.readingMMXU.W.net.cVal.mag.f.value"
+                  - name: "ReactivePower"
+                    register-type: holding
+                    address: 40003
+                    register-count: 2
+                    data-type: float32
+                    scale: 1.0
+                    unit: "VAR"
+                    profile-mapping: "solarReading.readingMMXU.VAr.net.cVal.mag.f.value"
+                  - name: "Voltage"
+                    register-type: holding
+                    address: 40005
+                    register-count: 2
+                    data-type: float32
+                    scale: 1.0
+                    unit: "V"
+                    profile-mapping: "solarReading.readingMMXU.PhV.phsA.cVal.mag.f.value"
+                  - name: "Current"
+                    register-type: holding
+                    address: 40007
+                    register-count: 2
+                    data-type: float32
+                    scale: 1.0
+                    unit: "A"
+                    profile-mapping: "solarReading.readingMMXU.A.phsA.cVal.mag.f.value"
+          - name: SolarStatusProfile
+            mRID: "03394dd2-5673-40f6-acdf-da811d7d1bec"
+            mapping:
+              - name: "SolarInverter"
+                type: "SolarInverter"
+                conducting-equipment:
+                  mRID: "03394dd2-5673-40f6-acdf-da811d7d1bec"
+                  name: "Solar Inverter 1"
+                status-data:
+                  - name: "InverterStatus"
+                    register-type: discrete-input
+                    address: 10001
+                    register-count: 1
+                    data-type: bool
+                    profile-mapping: "solarStatus.solarStatusZGEN.SolarStatusZGEN.DynamicTest.stVal"
