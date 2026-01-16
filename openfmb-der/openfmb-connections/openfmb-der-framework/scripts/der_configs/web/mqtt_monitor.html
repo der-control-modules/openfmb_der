@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>OpenFMB MQTT Monitor</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 10px;
+        }
+        #log {
+            height: 400px;
+            overflow: auto;
+            border: 1px solid #ccc;
+            padding: 6px;
+            font: 12px monospace;
+        }
+    </style>
+</head>
+<body>
+    <h3>OpenFMB MQTT Monitor</h3>
+    <input id="u" value="ws://localhost:9001" size="30"/>
+    <button onclick="c()">Connect</button>
+    <button onclick="d()">Disconnect</button>
+    <input id="t" value="openfmb/+/+/+" size="25"/>
+    <button onclick="s()">Subscribe</button>
+    <div id="st">Disconnected</div>
+    <div id="log"></div>
+    <script src="https://unpkg.com/mqtt@4.3.7/dist/mqtt.min.js"></script>
+    <script>
+        let client;
+        function log(l) {
+            const e = document.getElementById('log');
+            e.innerHTML += l + '<br>';
+            e.scrollTop = e.scrollHeight;
+        }
+        function set(v) {
+            document.getElementById('st').innerText = v;
+        }
+        function c() {
+            client = mqtt.connect(document.getElementById('u').value);
+            client.on('connect', () => {
+                set('Connected');
+                s();
+            });
+            client.on('message', (t, m) => log(new Date().toISOString() + ' | ' + t + ' | ' + m));
+            client.on('close', () => set('Disconnected'));
+            client.on('error', e => set('Error ' + e.message));
+        }
+        function d() {
+            client && client.end();
+        }
+        function s() {
+            client && client.subscribe(document.getElementById('t').value);
+        }
+    </script>
+</body>
+</html>

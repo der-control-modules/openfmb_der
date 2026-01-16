@@ -1,0 +1,9 @@
+sessions:
+  - session:
+      channel: { name: channel, adapter: "192.168.1.100", port: 502 }
+      timeout: 5000
+      profile:
+        - name: "solar_profile"
+          mRID: "generated-mrid"
+          unitId: 1
+          integrity_period: 5000

@@ -1,0 +1,226 @@
+{
+  "id": null,
+  "uid": "openfmb-der-live",
+  "title": "OpenFMB DER Integration Dashboard",
+  "tags": ["openfmb", "der", "integration"],
+  "timezone": "browser",
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "version": 1,
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Solar PV Power",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+      "datasource": {"type": "influxdb"},
+      "targets": [
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT mean(\"value\") FROM \"power\" WHERE (\"mrid\" = 'solar-1') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "resultFormat": "time_series",
+          "alias": "Solar Power",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "color": {"fixedColor": "yellow", "mode": "fixed"},
+          "custom": {"drawStyle": "line", "fillOpacity": 20, "lineWidth": 2}
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 2,
+      "title": "Battery ESS Power",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
+      "datasource": {"type": "influxdb"},
+      "targets": [
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT mean(\"value\") FROM \"power\" WHERE (\"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "resultFormat": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "color": {"fixedColor": "blue", "mode": "fixed"},
+          "custom": {"drawStyle": "line", "fillOpacity": 20, "lineWidth": 2}
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 3,
+      "title": "Battery State of Charge",
+      "type": "gauge",
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+      "datasource": {"type": "influxdb"},
+      "targets": [
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT last(\"value\") FROM \"soc\" WHERE (\"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783')",
+          "resultFormat": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": null},
+              {"color": "yellow", "value": 20},
+              {"color": "green", "value": 50},
+              {"color": "blue", "value": 80}
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "id": 4,
+      "title": "Grid Meter Power",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "datasource": {"type": "influxdb"},
+      "targets": [
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT mean(\"value\") FROM \"power\" WHERE (\"mrid\" = 'grid-meter-001') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "resultFormat": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "color": {"fixedColor": "green", "mode": "fixed"},
+          "custom": {"drawStyle": "line", "fillOpacity": 20, "lineWidth": 2}
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 5,
+      "title": "System Overview",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "datasource": {"type": "influxdb"},
+      "targets": [
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT mean(\"value\") FROM \"power\" WHERE (\"mrid\" = 'solar-1') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "resultFormat": "time_series",
+          "alias": "Solar",
+          "refId": "A"
+        },
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT mean(\"value\") FROM \"power\" WHERE (\"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "resultFormat": "time_series",
+          "alias": "Battery",
+          "refId": "B"
+        },
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT mean(\"value\") FROM \"power\" WHERE (\"mrid\" = 'grid-meter-001') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "resultFormat": "time_series",
+          "alias": "Grid",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "custom": {"drawStyle": "line", "fillOpacity": 10, "lineWidth": 2}
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "id": 6,
+      "title": "Current Values",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 24, "x": 0, "y": 16},
+      "datasource": {"type": "influxdb"},
+      "targets": [
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT last(\"value\") FROM \"power\" WHERE \"mrid\" = 'solar-1'",
+          "resultFormat": "time_series",
+          "alias": "Solar Power",
+          "refId": "A"
+        },
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT last(\"value\") FROM \"power\" WHERE \"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783'",
+          "resultFormat": "time_series",
+          "alias": "ESS Power",
+          "refId": "B"
+        },
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT last(\"value\") FROM \"soc\" WHERE \"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783'",
+          "resultFormat": "time_series",
+          "alias": "Battery SOC",
+          "refId": "C"
+        },
+        {
+          "datasource": {"type": "influxdb"},
+          "rawQuery": true,
+          "query": "SELECT last(\"value\") FROM \"power\" WHERE \"mrid\" = 'grid-meter-001'",
+          "resultFormat": "time_series",
+          "alias": "Grid Power",
+          "refId": "D"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "horizontal",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      }
+    }
+  ],
+  "mqtt_host": "localhost",
+  "mqtt_port": 1883,
+  "devices": {
+    "solar": "devices/campus/building/solar",
+    "battery": "devices/campus/building/battery",
+    "meter": "devices/campus/building/meter"
+  }
+}

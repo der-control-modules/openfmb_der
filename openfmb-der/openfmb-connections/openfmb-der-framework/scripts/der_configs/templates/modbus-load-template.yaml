@@ -1,0 +1,11 @@
+plugins:
+  - name: modbus-load
+    path: ./modbus-load.so
+    config:
+      channel: { name: channel, adapter: "load-ip", port: 502 }
+      timeout: 5000
+      profile:
+        - name: "load_profile"
+          mRID: "${MRID}"
+          unitId: 1
+          integrity_period: 5000

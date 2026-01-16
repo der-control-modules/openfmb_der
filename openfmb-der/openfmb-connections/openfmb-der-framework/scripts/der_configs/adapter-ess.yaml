@@ -1,0 +1,19 @@
+logging:
+  file: openfmb-ess.log
+  level: info
+
+plugins:
+  - name: mqtt-publisher
+    path: ./mqtt-publisher.so
+    config:
+      broker: { host: openfmb-mosquitto, port: 1883 }
+      topic_prefix: openfmb
+      client_id: openfmb-ess-client
+
+sessions:
+  - session:
+      channel: { name: channel, adapter: "host.docker.internal", port: 5020 }
+      device: { unit_id: 1 }
+      profiles:
+        - ess_reading:
+            filter: { conducting_equipment: { mrid: "ess-device-1" } }

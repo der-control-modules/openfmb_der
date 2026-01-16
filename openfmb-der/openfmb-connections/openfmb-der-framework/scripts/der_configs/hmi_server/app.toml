@@ -1,0 +1,7 @@
+[hmi]
+app_name = "OpenFMB HMI"
+environment = "dev"
+
+[nats]
+dev_uri  = "nats-server:4222"
+prod_uri = "nats-server:4222"

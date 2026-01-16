@@ -1,0 +1,7 @@
+plugins:
+  - name: mqtt-publisher
+    path: ./mqtt-publisher.so
+    config:
+      broker: { host: localhost, port: 1883 }
+      topic_prefix: openfmb
+      client_id: openfmb-load-client

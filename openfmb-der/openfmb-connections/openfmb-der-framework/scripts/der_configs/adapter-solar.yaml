@@ -1,0 +1,19 @@
+logging:
+  file: openfmb-solar.log
+  level: info
+
+plugins:
+  - name: mqtt-publisher
+    path: ./mqtt-publisher.so
+    config:
+      broker: { host: localhost, port: 1883 }
+      topic_prefix: openfmb
+      client_id: openfmb-solar-client
+
+sessions:
+  - session:
+      channel: { name: channel, adapter: "localhost", port: 5020 }
+      device: { unit_id: 1 }
+      profiles:
+        - solar_reading:
+            filter: { conducting_equipment: { mrid: "solar-device-1" } }

@@ -1,0 +1,162 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "OpenFMB DER Battery Monitor",
+    "tags": ["openfmb", "der", "battery"],
+    "timezone": "browser",
+    "refresh": "5s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Battery Power (W)",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "datasource": {"type": "influxdb", "uid": "${DS_INFLUXDB}"},
+            "query": "SELECT mean(\"value\") FROM \"power\" WHERE \"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783' AND \"device_type\" = 'ess' AND $timeFilter GROUP BY time($__interval)",
+            "alias": "Battery Power",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "watt",
+            "color": {"mode": "palette-classic"},
+            "custom": {
+              "drawStyle": "line",
+              "lineInterpolation": "linear",
+              "pointSize": 3
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": -2000},
+                {"color": "yellow", "value": -500},
+                {"color": "green", "value": 0},
+                {"color": "blue", "value": 500}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "State of Charge (%)",
+        "type": "gauge",
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+        "targets": [
+          {
+            "datasource": {"type": "influxdb", "uid": "${DS_INFLUXDB}"},
+            "query": "SELECT last(\"value\") FROM \"soc\" WHERE \"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783'",
+            "alias": "SOC",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 20},
+                {"color": "green", "value": 50},
+                {"color": "blue", "value": 80}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Current Power Status",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "targets": [
+          {
+            "datasource": {"type": "influxdb", "uid": "${DS_INFLUXDB}"},
+            "query": "SELECT last(\"value\") FROM \"power\" WHERE \"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783'",
+            "alias": "Current Power",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "watt",
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": -1000},
+                {"color": "yellow", "value": -100},
+                {"color": "green", "value": 0},
+                {"color": "blue", "value": 100}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Energy Flow Direction",
+        "type": "bargauge",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 4},
+        "targets": [
+          {
+            "datasource": {"type": "influxdb", "uid": "${DS_INFLUXDB}"},
+            "query": "SELECT last(\"value\") FROM \"power\" WHERE \"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783'",
+            "alias": "Flow",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "watt",
+            "min": -2000,
+            "max": 2000,
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": -2000},
+                {"color": "orange", "value": -500},
+                {"color": "yellow", "value": -100},
+                {"color": "green", "value": 100},
+                {"color": "blue", "value": 500}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Battery Performance Trend",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+        "targets": [
+          {
+            "datasource": {"type": "influxdb", "uid": "${DS_INFLUXDB}"},
+            "query": "SELECT mean(\"value\") FROM \"power\" WHERE \"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783' AND $timeFilter GROUP BY time($__interval)",
+            "alias": "Power Trend",
+            "refId": "A"
+          },
+          {
+            "datasource": {"type": "influxdb", "uid": "${DS_INFLUXDB}"},
+            "query": "SELECT mean(\"value\") * 50 FROM \"soc\" WHERE \"mrid\" = 'a6a7f5f4-2601-45d2-9445-ca147f32c783' AND $timeFilter GROUP BY time($__interval)",
+            "alias": "SOC Trend (scaled)",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "watt",
+            "color": {"mode": "palette-classic"}
+          }
+        }
+      }
+    ]
+  }
+}

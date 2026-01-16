@@ -1,0 +1,16 @@
+plugins:
+  - name: mqtt-publisher
+    path: ./mqtt-publisher.so
+    config:
+      broker: { host: ${mqtt_host}, port: ${mqtt_port} }
+      topic_prefix: openfmb
+      client_id: openfmb-ess-client
+sessions:
+  - session:
+      channel: { name: channel, adapter: "${ip}", port: ${port} }
+      timeout: 5000
+      profile:
+        - name: "ess_profile"
+          mRID: "$(grep ^MRID scripts/der_configs/.env | cut -d= -f2)"
+          unitId: ${devid}
+          integrity_period: 5000

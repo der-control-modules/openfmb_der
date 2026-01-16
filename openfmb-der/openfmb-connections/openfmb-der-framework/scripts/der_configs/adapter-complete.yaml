@@ -1,0 +1,109 @@
+id: openfmb-der-adapter
+name: "OpenFMB DER Complete Adapter"
+version: "2.1.0"
+
+logging:
+  file: "adapter.log"
+  level: info
+
+plugin:
+  - name: mqtt-publisher
+    file: mqtt-publisher.so
+    protocol:
+      - name: mqtt
+        adapter: tcp://openfmb-mosquitto:1883
+        publish_topic_suffix: "openfmb"
+        subscribe_topic_suffix: "openfmb"
+        client_id: "openfmb-complete-adapter"
+
+  - name: modbus-master
+    file: modbus-master.so
+    protocol:
+      - name: modbus
+        adapter: "host.docker.internal:5020"
+        
+master_session:
+  - session:
+      protocol: modbus
+      channel:
+        id: 1
+      session_params:
+        max_poll_interval_ms: 3000
+        
+      profile:
+        - ess_reading:
+            mRID: "a6a7f5f4-2601-45d2-9445-ca147f32c783"
+            unit_id: 1
+            schedule_parameter:
+              schedule_type: schedule_type_none
+            mapping:
+              - name: ess_reading_profile
+                description: "ESS Reading Mapping"
+                register:
+                  - name: battery_soc
+                    register_type: holding_register
+                    index: 10
+                    scale: 1.0
+                    unit: percent
+                    mapped_to:
+                      - conducting_equipment: "a6a7f5f4-2601-45d2-9445-ca147f32c783"
+                        reading_message_info:
+                          message_info:
+                            identified_object:
+                              mRID: "a6a7f5f4-2601-45d2-9445-ca147f32c783"
+                        ess_reading:
+                          reading_mmxu:
+                            soc:
+                              mag: "$value"
+                              
+                  - name: battery_power
+                    register_type: holding_register
+                    index: 11
+                    scale: 1.0
+                    unit: watts
+                    mapped_to:
+                      - conducting_equipment: "a6a7f5f4-2601-45d2-9445-ca147f32c783"
+                        ess_reading:
+                          reading_mmxu:
+                            w:
+                              mag: "$value"
+                              
+        - solar_reading:
+            mRID: "solar-pv-001"
+            unit_id: 1
+            schedule_parameter:
+              schedule_type: schedule_type_none
+            mapping:
+              - name: solar_reading_profile
+                register:
+                  - name: solar_power
+                    register_type: holding_register
+                    index: 0
+                    scale: 1.0
+                    unit: watts
+                    mapped_to:
+                      - conducting_equipment: "solar-pv-001"
+                        solar_reading:
+                          reading_mmxu:
+                            w:
+                              mag: "$value"
+                              
+        - meter_reading:
+            mRID: "grid-meter-001"
+            unit_id: 1
+            schedule_parameter:
+              schedule_type: schedule_type_none
+            mapping:
+              - name: meter_reading_profile
+                register:
+                  - name: grid_power
+                    register_type: holding_register
+                    index: 30
+                    scale: 1.0
+                    unit: watts
+                    mapped_to:
+                      - conducting_equipment: "grid-meter-001"
+                        meter_reading:
+                          reading_mmxu:
+                            w:
+                              mag: "$value"
